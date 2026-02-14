@@ -651,18 +651,41 @@
                 }, interval);
             }
 
-            btn.addEventListener('click', () => {
+            function startMusic() {
+                if (isPlaying) return;
+                audio.play();
+                fadeVolume(0.4, 2000);
+                btn.classList.add('playing');
+                btn.textContent = '🔊';
+                isPlaying = true;
+            }
+
+            // Auto-start on first interaction (browsers require a gesture)
+            function onFirstInteraction() {
+                startMusic();
+                document.removeEventListener('click', onFirstInteraction);
+                document.removeEventListener('touchstart', onFirstInteraction);
+                document.removeEventListener('keydown', onFirstInteraction);
+            }
+            document.addEventListener('click', onFirstInteraction, { once: false });
+            document.addEventListener('touchstart', onFirstInteraction, { once: false });
+            document.addEventListener('keydown', onFirstInteraction, { once: false });
+
+            // Toggle button still works to pause/resume
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // don't re-trigger auto-start
                 if (isPlaying) {
                     fadeVolume(0, 1000);
                     btn.classList.remove('playing');
                     btn.textContent = '🎵';
+                    isPlaying = false;
                 } else {
                     audio.play();
                     fadeVolume(0.4, 1500);
                     btn.classList.add('playing');
                     btn.textContent = '🔊';
+                    isPlaying = true;
                 }
-                isPlaying = !isPlaying;
             });
         })();
     </script>
