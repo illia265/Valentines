@@ -190,11 +190,21 @@
 
         .page-image {
             width: 100%;
-            max-width: 300px;
-            border-radius: 10px;
+            max-width: 280px;
+            border-radius: 4px;
             object-fit: cover;
             aspect-ratio: 1 / 1;
-            box-shadow: 0 3px 16px rgba(120, 60, 80, 0.1);
+            border: 6px solid #fff;
+            box-shadow: 0 2px 12px rgba(80, 40, 60, 0.12), 0 1px 3px rgba(80, 40, 60, 0.08);
+            transform: rotate(-1.5deg);
+        }
+
+        .page:nth-child(odd) .page-image {
+            transform: rotate(2deg);
+        }
+
+        .page:nth-child(3n) .page-image {
+            transform: rotate(-0.8deg);
         }
 
         /* ─── Final Page ──────────────────────────────────── */
@@ -260,11 +270,12 @@
         }
 
         .page-indicator {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.7rem;
+            font-family: 'Lora', Georgia, serif;
+            font-size: 0.75rem;
             font-weight: 400;
+            font-style: italic;
             color: #c8a0aa;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.03em;
         }
 
         /* ─── Tap zones (invisible) ───────────────────────── */
@@ -328,41 +339,6 @@
             }
         }
 
-        /* ─── Floating Hearts (background) ────────────────── */
-        .hearts-bg {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .floating-heart {
-            position: absolute;
-            opacity: 0;
-            animation: floatUp linear infinite;
-            user-select: none;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 0;
-                transform: translateY(0) rotate(0deg) scale(0.5);
-            }
-
-            10% {
-                opacity: 0.12;
-            }
-
-            90% {
-                opacity: 0.12;
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateY(-100vh) rotate(20deg) scale(0.9);
-            }
-        }
 
         /* ─── Responsive ──────────────────────────────────── */
         @media (max-width: 400px) {
@@ -403,8 +379,6 @@
 
 <body>
 
-    <!-- Background hearts -->
-    <div class="hearts-bg" id="heartsBg"></div>
 
     <!-- ═══════ BOOK ═══════ -->
     <div class="book" id="book">
@@ -514,7 +488,7 @@
         <!-- Navigation -->
         <div class="nav-bar">
             <button class="nav-btn" id="prevBtn" disabled>← back</button>
-            <span class="page-indicator" id="pageIndicator">1 / 9</span>
+            <span class="page-indicator" id="pageIndicator">page 1 of 9</span>
             <button class="nav-btn" id="nextBtn">next →</button>
         </div>
 
@@ -573,7 +547,7 @@
                 // Update nav
                 prevBtn.disabled = current === 0;
                 nextBtn.disabled = current === total - 1;
-                indicator.textContent = `${current + 1} / ${total}`;
+                indicator.textContent = `page ${current + 1} of ${total}`;
             }
 
             prevBtn.addEventListener('click', () => goTo(current - 1));
@@ -607,22 +581,6 @@
             });
         })();
 
-        /* ── Floating Hearts ─────────────────────────────── */
-        (function createHearts() {
-            const canvas = document.getElementById('heartsBg');
-            const hearts = ['♥', '♡'];
-            for (let i = 0; i < 8; i++) {
-                const el = document.createElement('span');
-                el.className = 'floating-heart';
-                el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                el.style.left = Math.random() * 100 + '%';
-                el.style.fontSize = (0.5 + Math.random() * 0.7) + 'rem';
-                el.style.color = '#e0a0b0';
-                el.style.animationDuration = (14 + Math.random() * 20) + 's';
-                el.style.animationDelay = (Math.random() * 16) + 's';
-                canvas.appendChild(el);
-            }
-        })();
 
         /* ── Music Toggle ────────────────────────────────── */
         (function initMusic() {
