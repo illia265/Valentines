@@ -402,7 +402,8 @@
             <p class="page-label">When I First Knew</p>
             <p class="page-message">
                 I don't think there was one single moment. It was more like I started noticing that I was looking for
-                reasons to be around (going to the gym and and getting lunch). I'd find excuses to text you, to keep the conversation going a little longer.
+                reasons to be around (going to the gym and and getting lunch). I'd find excuses to text you, to keep the
+                conversation going a little longer.
                 At some point I realized I wasn't doing that with anyone else. That's when I knew.
             </p>
             <img class="page-image" src="card1.png" alt="When I first knew" loading="lazy">
@@ -412,7 +413,8 @@
         <div class="page" data-page="2">
             <p class="page-label">Our First Real Date</p>
             <p class="page-message">
-                After months of "talking," we finally went on an actual date. And honestly, I was nervous because it was my first time, even though I knew you for a while. But then we
+                After months of "talking," we finally went on an actual date. And honestly, I was nervous because it was
+                my first time, even though I knew you for a while. But then we
                 sat down and it just felt natural. Like we had already done this a hundred times. That was the moment I
                 stopped overthinking it and just let myself enjoy being with you.
             </p>
@@ -423,7 +425,8 @@
         <div class="page" data-page="3">
             <p class="page-label">Our FaceTimes Over Winter Break</p>
             <p class="page-message">
-                Being apart over winter break could have made things harder. Instead, those FaceTime calls became the highlight
+                Being apart over winter break could have made things harder. Instead, those FaceTime calls became the
+                highlight
                 of my day. We'd talk about nothing important and it would still be the best part of my night. That's
                 when I realized I didn't just like the big moments with you. I valued the small, ordinary ones just as
                 much.
@@ -589,6 +592,7 @@
             audio.loop = true;
             audio.volume = 0;
             let isPlaying = false;
+            let autoStarted = false;
             let fadeInterval = null;
 
             function fadeVolume(target, duration) {
@@ -609,6 +613,12 @@
                 }, interval);
             }
 
+            function removeAutoStartListeners() {
+                document.removeEventListener('click', onFirstInteraction);
+                document.removeEventListener('touchstart', onFirstInteraction);
+                document.removeEventListener('keydown', onFirstInteraction);
+            }
+
             function startMusic() {
                 if (isPlaying) return;
                 audio.play();
@@ -619,19 +629,26 @@
             }
 
             // Auto-start on first interaction (browsers require a gesture)
-            function onFirstInteraction() {
+            function onFirstInteraction(e) {
+                // If the click was on the toggle button, let the button handler deal with it
+                if (e.target === btn || btn.contains(e.target)) return;
+                if (autoStarted) return;
+                autoStarted = true;
                 startMusic();
-                document.removeEventListener('click', onFirstInteraction);
-                document.removeEventListener('touchstart', onFirstInteraction);
-                document.removeEventListener('keydown', onFirstInteraction);
+                removeAutoStartListeners();
             }
-            document.addEventListener('click', onFirstInteraction, { once: false });
-            document.addEventListener('touchstart', onFirstInteraction, { once: false });
-            document.addEventListener('keydown', onFirstInteraction, { once: false });
+            document.addEventListener('click', onFirstInteraction);
+            document.addEventListener('touchstart', onFirstInteraction);
+            document.addEventListener('keydown', onFirstInteraction);
 
-            // Toggle button still works to pause/resume
+            // Toggle button works to play/pause
             btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // don't re-trigger auto-start
+                e.stopPropagation();
+                // Clean up auto-start listeners since user is now manually controlling
+                if (!autoStarted) {
+                    autoStarted = true;
+                    removeAutoStartListeners();
+                }
                 if (isPlaying) {
                     fadeVolume(0, 1000);
                     btn.classList.remove('playing');
